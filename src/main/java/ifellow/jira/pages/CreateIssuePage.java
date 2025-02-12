@@ -7,6 +7,7 @@ import com.codeborne.selenide.SelenideElement;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 public class CreateIssuePage {
     private final SelenideElement summaryInput = $x("//input[@id='summary']")
@@ -98,12 +99,22 @@ public class CreateIssuePage {
     }
 
     private void fillTextareaVisual(SelenideElement textarea, String text) {
-        textarea.shouldBe(Condition.exist, Duration.ofSeconds(15))
-                .$x("./following-sibling::nav//button[text()='Визуальный']")
-                .scrollTo()
-                .click();
-        textarea
+        var visualButton = textarea.shouldBe(Condition.exist, Duration.ofSeconds(15))
+                .$x("./following-sibling::nav//button[text()='Визуальный']");
+
+        if ("false".equals(visualButton.getAttribute("aria-pressed"))) {
+            visualButton
+                    .scrollTo()
+                    .doubleClick();
+        }
+        visualButton.shouldHave(Condition.attribute("aria-pressed", "true"), Duration.ofSeconds(3));
+
+        getWebDriver().switchTo().frame(textarea.$x("./following-sibling::div//iframe"));
+
+        $x(".//body[@id='tinymce']")
                 .scrollTo()
                 .sendKeys(text);
+
+        getWebDriver().switchTo().defaultContent();
     }
 }

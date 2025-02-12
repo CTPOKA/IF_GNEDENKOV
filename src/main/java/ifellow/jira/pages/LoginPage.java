@@ -17,10 +17,15 @@ public class LoginPage {
             .as("Внопка входа");
 
     public MainPage login(String login, String password) {
-        loginInput.shouldBe(Condition.visible, Duration.ofSeconds(15))
+        loginInput
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .sendKeys(login);
-        passwordInput.sendKeys(password);
-        loginButton.click();
+        passwordInput
+                .shouldBe(Condition.visible, Duration.ofSeconds(1))
+                .sendKeys(password);
+        loginButton
+                .shouldBe(Condition.visible, Duration.ofSeconds(1))
+                .click();
         return Selenide.page(MainPage.class);
     }
 }
