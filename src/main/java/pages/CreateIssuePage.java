@@ -1,4 +1,4 @@
-package ifellow.jira.pages;
+package pages;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
@@ -11,9 +11,9 @@ import static com.codeborne.selenide.Selenide.$x;
 public class CreateIssuePage {
     private final SelenideElement summaryInput = $x("//input[@id='summary']")
             .as("Поле ввода заголовка задачи");
-    private final SelenideElement descriptionTextarea = $x("//textarea[@id='description']")
+    private final SelenideElement descriptionTextarea = $x("//div[@id='description-wiki-edit']")
             .as("Поле ввода описания задачи");
-    private final SelenideElement environmentTextarea = $x("//textarea[@id='environment']")
+    private final SelenideElement environmentTextarea = $x("//div[@id='environment-wiki-edit']")
             .as("Поле ввода окружения задачи");
     private final SelenideElement fixVersionsSelect = $x("//select[@id='fixVersions']")
             .as("Выпадающий список версий");
@@ -21,8 +21,6 @@ public class CreateIssuePage {
             .as("Поле приоритета задачи");
     private final SelenideElement typeInput = $x("//input[@id='issuetype-field']")
             .as("Поле типа задачи");
-    private final SelenideElement severitySelect = $x("//label[text()='Серьезность']/following-sibling::select")
-            .as("Выпадающий список серьезности");
     private final SelenideElement createIssueButton = $x("//input[@id='create-issue-submit']")
             .as("Кнопка создания задачи");
     private final SelenideElement issueCreationMessage = $x("//a[contains(@class, 'issue-created-key')]")
@@ -30,13 +28,16 @@ public class CreateIssuePage {
     private final SelenideElement closeCreationMessageButton = issueCreationMessage.$x("./following-sibling::button[@class='aui-close-button']")
             .as("Кнопка закрытия уведомления");
 
-    public MainPage createIssue() {
+    public MainPage pressCreateIssueButton() {
         createIssueButton.shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .scrollTo()
                 .click();
-        closeCreationMessageButton.shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .click();
+        closeCreationMessage();
         return Selenide.page(MainPage.class);
+    }
+
+    public void closeCreationMessage() {
+        closeCreationMessageButton.shouldBe(Condition.visible, Duration.ofSeconds(15)).click();
     }
 
     public CreateIssuePage setSummary(String summary) {
@@ -57,19 +58,8 @@ public class CreateIssuePage {
     }
 
     public CreateIssuePage addFixVersion(String version) {
-        fixVersionsSelect
+        fixVersionsSelect.$x(String.format(".//option[normalize-space(text())='%s']", version))
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .scrollTo()
-                .$x(String.format(".//option[normalize-space(text())='%s']", version))
-                .as("Выбор версии: " + version)
-                .click();
-        return this;
-    }
-
-    public CreateIssuePage setSeverity(int severityLevel) {
-        severitySelect.shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .$x(String.format(".//option[starts-with(text(), '%s')]", "S" + severityLevel))
-                .as("Выбор серьезности S" + severityLevel)
                 .scrollTo()
                 .click();
         return this;
@@ -92,18 +82,24 @@ public class CreateIssuePage {
     }
 
     public String getLastCreatedIssueFullName() {
-        return issueCreationMessage
-                .shouldBe(Condition.exist, Duration.ofSeconds(15))
+        return issueCreationMessage.shouldBe(Condition.exist, Duration.ofSeconds(15))
                 .text();
     }
 
     private void fillTextareaVisual(SelenideElement textarea, String text) {
-        textarea.shouldBe(Condition.exist, Duration.ofSeconds(15))
-                .$x("./following-sibling::nav//button[text()='Визуальный']")
-                .scrollTo()
-                .click();
-        textarea
+        var visualButton = textarea.$x(".//button[text()='Визуальный']")
+                .shouldBe(Condition.enabled, Duration.ofSeconds(15));
+
+        if ("false".equals(visualButton.getAttribute("aria-pressed"))) {
+            visualButton.scrollTo().click();
+        }
+
+        Selenide.switchTo().frame(textarea.$x(".//iframe"));
+
+        $x(".//body")
                 .scrollTo()
                 .sendKeys(text);
+
+        Selenide.switchTo().defaultContent();
     }
 }

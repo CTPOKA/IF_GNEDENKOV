@@ -1,4 +1,4 @@
-package ifellow.jira.pages;
+package pages;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
@@ -23,27 +23,27 @@ public class MainPage {
             .as("Кнопка создания задачи");
 
     public CreateIssuePage openCreateIssuePage() {
-        createIssueButton.shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .click();
+        createIssueButton.shouldBe(Condition.visible, Duration.ofSeconds(15)).click();
         return Selenide.page(CreateIssuePage.class);
     }
 
-    public ProjectPage openProject(String projectName) {
-        projectsDropdownButton.shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .click();
-        projectsList
-                .shouldBe(Condition.visible, Duration.ofSeconds(3))
+    public void openProject(String projectName) {
+        pressProjectDropdownButton();
+        projectsList.shouldBe(Condition.visible)
                 .$x(String.format(".//a[starts-with(text(), '%s')]", projectName + " ("))
                 .click();
-        return Selenide.page(ProjectPage.class);
     }
 
-    public IssuePage openIssue(String IssueName) {
-        projectsDropdownButton.shouldBe(Condition.visible, Duration.ofSeconds(15));
-        return openIssue(IssueName, IssueName);
+    public void pressProjectDropdownButton() {
+        projectsDropdownButton.shouldBe(Condition.visible, Duration.ofSeconds(15)).click();
+    }
+
+    public void openIssue(String IssueName) {
+        openIssue(IssueName, IssueName);
     }
 
     public IssuePage openIssue(String issueName, String searchText) {
+        projectsDropdownButton.shouldBe(Condition.visible, Duration.ofSeconds(15));
         search(issueName, searchText).click();
         return Selenide.page(IssuePage.class);
     }
@@ -54,11 +54,8 @@ public class MainPage {
     }
 
     private SelenideElement search(String title, String searchText) {
-        searchInput
-                .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .sendKeys(searchText);
-        return searchResultsList
-                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+        searchInput.shouldBe(Condition.visible, Duration.ofSeconds(15)).sendKeys(searchText);
+        return searchResultsList.shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .$x(String.format(".//li[@original-title='%s']", title));
     }
 }

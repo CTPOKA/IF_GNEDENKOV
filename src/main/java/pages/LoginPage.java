@@ -1,4 +1,4 @@
-package ifellow.jira.pages;
+package pages;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
@@ -17,10 +17,18 @@ public class LoginPage {
             .as("Внопка входа");
 
     public MainPage login(String login, String password) {
-        loginInput.shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .sendKeys(login);
-        passwordInput.sendKeys(password);
-        loginButton.click();
+        setFieldCredential(login, password).pressLoginButton();
+
         return Selenide.page(MainPage.class);
+    }
+
+    public LoginPage setFieldCredential(String login, String password) {
+        loginInput.shouldBe(Condition.visible, Duration.ofSeconds(15)).sendKeys(login);
+        passwordInput.shouldBe(Condition.visible).sendKeys(password);
+        return this;
+    }
+
+    public void pressLoginButton() {
+        loginButton.shouldBe(Condition.visible).click();
     }
 }
