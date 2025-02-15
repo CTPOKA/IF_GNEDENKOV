@@ -16,7 +16,7 @@ public class JiraTest extends WebHooks {
     private static final Properties props = new Properties();
 
     static {
-        try (InputStream input = Files.newInputStream(Paths.get("src/main/java/config/ConfigProperties"))) {
+        try (InputStream input = Files.newInputStream(Paths.get("src/main/java/config/Config.properties"))) {
             props.load(input);
         } catch (IOException e) {
             throw new RuntimeException("Ошибка загрузки конфигурации", e);
