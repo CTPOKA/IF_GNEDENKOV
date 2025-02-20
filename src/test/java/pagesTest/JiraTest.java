@@ -1,27 +1,12 @@
 package pagesTest;
 
 import com.codeborne.selenide.Selenide;
+import config.ConfigReader;
 import org.junit.jupiter.api.*;
 import pages.*;
 import webHooks.WebHooks;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Properties;
-
 public class JiraTest extends WebHooks {
-
-    private static final Properties props = new Properties();
-
-    static {
-        try (InputStream input = Files.newInputStream(Paths.get("src/main/java/config/Config.properties"))) {
-            props.load(input);
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка загрузки конфигурации", e);
-        }
-    }
 
     private final LoginPage jiraLoginPage = new LoginPage();
     private final MainPage jiraMainPage = new MainPage();
@@ -29,11 +14,11 @@ public class JiraTest extends WebHooks {
     private final IssuePage jiraIssuePage = new IssuePage();
     private final CreateIssuePage jiraCreateIssuePage = new CreateIssuePage();
 
-    private final String login = props.getProperty("login");
-    private final String password =  props.getProperty("password");
+    private final String login = ConfigReader.getProperty("login");
+    private final String password =  ConfigReader.getProperty("password");
 
-    private final String projectName = props.getProperty("projectName");
-    private final String issueName = props.getProperty("issueName");
+    private final String projectName = ConfigReader.getProperty("projectName");
+    private final String issueName = ConfigReader.getProperty("issueName");
 
     @Test
     @DisplayName("Проверка успешной аутентификации пользователя")
