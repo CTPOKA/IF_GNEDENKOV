@@ -9,16 +9,13 @@ public class LoginSteps {
     private final LoginPage jiraLoginPage = new LoginPage();
     private final MainPage jiraMainPage = new MainPage();
 
-    private final String login = ConfigReader.getProperty("login");
-    private final String password = ConfigReader.getProperty("password");
-
     @Допустим("пользователь заходит в Jira")
     public void loginToJira() {
-        jiraLoginPage.login(login, password);
+        jiraLoginPage.login(ConfigReader.getProperty("login"), ConfigReader.getProperty("password"));
     }
 
     @Тогда("он должен увидеть свой профиль")
     public void verifySuccessfulLogin() {
-        Assertions.assertEquals(login, jiraMainPage.getCurrentUser());
+        Assertions.assertEquals(ConfigReader.getProperty("login"), jiraMainPage.getCurrentUser());
     }
 }
