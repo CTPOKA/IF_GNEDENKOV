@@ -3,12 +3,14 @@ package pages;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 
 import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.$x;
 
 public class CreateIssuePage {
+
     private final SelenideElement summaryInput = $x("//input[@id='summary']")
             .as("Поле ввода заголовка задачи");
     private final SelenideElement descriptionTextarea = $x("//div[@id='description-wiki-edit']")
@@ -28,6 +30,7 @@ public class CreateIssuePage {
     private final SelenideElement closeCreationMessageButton = issueCreationMessage.$x("./following-sibling::button[@class='aui-close-button']")
             .as("Кнопка закрытия уведомления");
 
+    @Step("Нажать кнопку 'Создать задачу'")
     public MainPage pressCreateIssueButton() {
         createIssueButton.shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .scrollTo()
@@ -36,10 +39,12 @@ public class CreateIssuePage {
         return Selenide.page(MainPage.class);
     }
 
+    @Step("Закрыть уведомление о создании задачи")
     public void closeCreationMessage() {
         closeCreationMessageButton.shouldBe(Condition.visible, Duration.ofSeconds(15)).click();
     }
 
+    @Step("Заполнить заголовок задачи: {summary}")
     public CreateIssuePage setSummary(String summary) {
         summaryInput.shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .scrollTo()
@@ -47,16 +52,19 @@ public class CreateIssuePage {
         return this;
     }
 
+    @Step("Заполнить описание задачи: {description}")
     public CreateIssuePage setDescription(String description) {
         fillTextareaVisual(descriptionTextarea, description);
         return this;
     }
 
+    @Step("Заполнить окружение задачи: {environment}")
     public CreateIssuePage setEnvironment(String environment) {
         fillTextareaVisual(environmentTextarea, environment);
         return this;
     }
 
+    @Step("Выбрать версию исправления: {version}")
     public CreateIssuePage addFixVersion(String version) {
         fixVersionsSelect.$x(String.format(".//option[normalize-space(text())='%s']", version))
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
@@ -65,6 +73,7 @@ public class CreateIssuePage {
         return this;
     }
 
+    @Step("Установить приоритет задачи: {priority}")
     public CreateIssuePage setPriority(String priority) {
         priorityInput.shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .scrollTo()
@@ -73,6 +82,7 @@ public class CreateIssuePage {
         return this;
     }
 
+    @Step("Установить тип задачи: {type}")
     public CreateIssuePage setType(String type) {
         typeInput.shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .scrollTo()
@@ -81,11 +91,13 @@ public class CreateIssuePage {
         return this;
     }
 
+    @Step("Получить имя последней созданной задачи")
     public String getLastCreatedIssueFullName() {
         return issueCreationMessage.shouldBe(Condition.exist, Duration.ofSeconds(15))
                 .text();
     }
 
+    @Step("Заполнить текстовое поле через визуальный редактор")
     private void fillTextareaVisual(SelenideElement textarea, String text) {
         var visualButton = textarea.$x(".//button[text()='Визуальный']")
                 .shouldBe(Condition.enabled, Duration.ofSeconds(15));
