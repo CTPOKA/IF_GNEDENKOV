@@ -1,4 +1,4 @@
-package rick_and_morty;
+package models.rick_and_morty;
 
 import lombok.Getter;
 
