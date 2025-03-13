@@ -67,6 +67,7 @@ public class CreateIssuePage {
     @Step("Выбрать версию исправления: {version}")
     public CreateIssuePage addFixVersion(String version) {
         fixVersionsSelect.$x(String.format(".//option[normalize-space(text())='%s']", version))
+                .as("Опция версии исправления: " + version)
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
                 .scrollTo()
                 .click();
@@ -100,15 +101,17 @@ public class CreateIssuePage {
     @Step("Заполнить текстовое поле через визуальный редактор")
     private void fillTextareaVisual(SelenideElement textarea, String text) {
         var visualButton = textarea.$x(".//button[text()='Визуальный']")
+                .as("Кнопка переключения в визуальный режим")
                 .shouldBe(Condition.enabled, Duration.ofSeconds(15));
 
         if ("false".equals(visualButton.getAttribute("aria-pressed"))) {
             visualButton.scrollTo().click();
         }
 
-        Selenide.switchTo().frame(textarea.$x(".//iframe"));
+        Selenide.switchTo().frame(textarea.$x(".//iframe").as("Фрейм редактора"));
 
         $x(".//body")
+                .as("Тело редактора")
                 .scrollTo()
                 .sendKeys(text);
 

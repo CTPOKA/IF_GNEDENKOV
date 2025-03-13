@@ -35,6 +35,7 @@ public class MainPage {
         pressProjectDropdownButton();
         projectsList.shouldBe(Condition.visible)
                 .$x(String.format(".//a[starts-with(text(), '%s')]", projectName + " ("))
+                .as("Ссылка на проект: " + projectName)
                 .click();
     }
 
